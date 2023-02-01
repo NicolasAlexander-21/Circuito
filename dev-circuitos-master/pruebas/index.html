@@ -1,0 +1,75 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="./main.js" defer></script>
+  <title>Document</title>
+</head>
+<body>
+  <button onclick="ver()">ver</button>
+  <div id="visualizacion">
+    <div class="barra"   style="height: 10%; background-color: #f23df2">V</div>
+    <div class="barra"   style="height: 10%; background-color: #f23df2">C</div>
+    <div class="barra"   style="height: 10%; background-color: #f23df2">C</div>
+     Agrega más barras aquí 
+  </div>
+  
+</body>
+</html>-->
+
+<!doctype html>
+<html>
+
+<head>
+  <title>Leguiws</title>
+  <script src="./main.js" defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    
+
+    .soundContainer {
+    font-family: sans-serif;
+    text-align: center;
+    background-color: #f3f4;
+    color: rgb(0, 0, 0);
+  }
+
+
+
+  .soundContainer>div {
+    display: inline-block;
+    width: 3px;
+    height: 100px;
+    margin: 0 7px;
+    background: currentColor;
+    transform: scaleY(.5);
+    opacity: .25;
+  }
+
+
+
+ 
+  </style>
+</head>
+
+<body >
+
+  <div class="bg-dark">
+    <div id="soundContainer" class="soundContainer" >
+    </div>
+  </div>
+
+  <div id="transcript" class=""></div>
+
+  <button onclick="init()"  style="width: 100px">start</button>
+  <button onclick="end()" style="width: 100px">stop</button>
+</body>
+
+
+
+
+</html>

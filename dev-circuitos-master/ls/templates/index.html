@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="apple-mobile-web-app-title" content="CodePen">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <!-- boostrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+
+  <!-- sources App -->
+  <link rel="stylesheet" href="../static/css/styles.css">
+  <link href="../static/img/">
+  <script src="../static/javascript/main.js" defer ></script>
+
+
+ 
+  <!-- sources Web -->
+  <link rel="apple-touch-icon" type="image/png" href="https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico" />
+  <link rel="mask-icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg" color="#111" />
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/f0601b0fb2.js" crossorigin="anonymous"></script>
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule='' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+  <title>Lewings</title>
+</head>
+
+
+<body translate="no" >
+  
+ 
+  
+  <div class="header-card  d-flex justify-content-center  align-items-center" id="container-gif">
+    <img src="" alt="" id="imagen-gif">
+    <video controls src="/pantalla.mp4" type="video/mp4"></video>
+  </div>
+
+
+
+
+  <div class="card-play x-hidden y-hidden">
+    <div class="">
+      
+
+
+
+  
+
+
+
+      <div class="circle">
+        <span class="circle__btn" onclick="init();changeStatusRec()">
+          <ion-icon class="pause" name="pause"></ion-icon>
+          <ion-icon class="play"  name="play"></ion-icon>
+        </span>
+        <span class="circle__back-2"></span>
+        <span class="circle__back-1"></span>
+      </div>
+      
+      <!-- para las barras de frecuencias  -->
+
+      <div class="text-center">
+        <div id="soundContainer" class="soundContainer" >
+        </div>
+      </div>
+
+      <div class="text-center mb-1">
+        <div id="texto" class="mx-auto"></div>
+      </div>
+
+
+
+
+
+
+
+      <script >
+        let statusSoundBar = true;
+
+        class AudioVisualizer {
+          constructor(audioContext, processFrame) {
+            this.audioContext = audioContext;
+            this.processFrame = processFrame;
+            this.connectStream = this.connectStream.bind(this);
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+              .then(this.connectStream)
+              .catch((error) => {
+                alert('Se ha iterrumpido la entrada de audio')
+              });
+          }
+
+          connectStream(stream) {
+            this.analyser = this.audioContext.createAnalyser();
+            const source = this.audioContext.createMediaStreamSource(stream);
+            source.connect(this.analyser);
+            this.analyser.smoothingTimeConstant = 0.5;
+            this.analyser.fftSize = 32;
+
+            this.initRenderLoop(this.analyser);
+          }
+
+          initRenderLoop() {
+            const frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
+            const processFrame = this.processFrame || (() => { });
+
+            const renderFrame = () => {
+              this.analyser.getByteFrequencyData(frequencyData);
+              processFrame(frequencyData);
+
+              requestAnimationFrame(renderFrame);
+            };
+            requestAnimationFrame(renderFrame);
+          }
+        }
+
+
+
+
+        const visualMainElement = document.getElementById('soundContainer');
+        const visualValueCount = 16;
+        let visualElements;
+
+
+
+
+        const createDOMElements = () => {
+          let i;
+          for (i = 0; i < visualValueCount; ++i) {
+            const elm = document.createElement('div');
+            visualMainElement.appendChild(elm);
+          }
+
+          visualElements = document.querySelectorAll('#soundContainer div');
+        };
+
+
+      function init() {
+        statusSoundBar = !statusSoundBar
+
+        if(statusSoundBar==false){
+          createDOMElements();
+        // Swapping values around for a better visual effect
+          const dataMap = { 0: 15, 1: 10, 2: 8, 3: 9, 4: 6, 5: 5, 6: 2, 7: 1, 8: 0, 9: 4, 10: 3, 11: 7, 12: 11, 13: 13, 14: 14, 15: 14 };
+          const processFrame = (data) => {
+            const values = Object.values(data);
+            let i;
+            for (i = 0; i < visualValueCount; ++i) {
+              const value = values[dataMap[i]] / 255;
+              const elmStyles = visualElements[i].style;
+              elmStyles.transform = `scaleY( ${value} )`;
+              elmStyles.opacity = Math.max(.25, value);
+            }
+          };
+
+          const a = new AudioVisualizer(new AudioContext(), processFrame);
+
+        }
+
+
+        if(statusSoundBar) {
+          visualMainElement.innerHTML= '';
+          let imgElement = document.getElementById('imagen-gif');
+          let textoElement = document.getElementById('texto');
+          textoElement.innerHTML='';
+          imgElement.src = '';
+          alert('Toma tu webada')
+        }
+
+      };
+
+      </script> 
+
+
+
+
+
+
+
+<!-- <script>
+  let startBarSound=false
+
+  let instancia = null
+  let processFrame = null 
+
+  class AudioVisualizer {
+    constructor(audioContext, processFrame) {
+      this.analyser = null
+      this.audioContext = audioContext;
+      this.processFrame = processFrame;
+      this.connectStream = this.connectStream.bind(this);
+      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        .then(this.connectStream)
+        .catch((error) => {
+          alert('Se ha iterrumpido la entrada de audio')
+        });
+    }
+
+    connectStream(stream) {
+      this.analyser = this.audioContext.createAnalyser();
+      const source = this.audioContext.createMediaStreamSource(stream);
+      source.connect(this.analyser);
+      this.analyser.smoothingTimeConstant = 0.5;
+      this.analyser.fftSize = 32;
+
+      this.initRenderLoop(this.analyser);
+    }
+
+    initRenderLoop() {
+      const frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
+      const processFrame = this.processFrame || (() => { });
+
+      const renderFrame = () => {
+        this.analyser.getByteFrequencyData(frequencyData);
+        processFrame(frequencyData);
+
+        requestAnimationFrame(renderFrame);
+      };
+      requestAnimationFrame(renderFrame);
+    }
+
+
+    closed(){
+      this.audioContext.suspend();
+      this.audioContext.close();
+      this.analyser.disconnect()
+      this.analyser.suspend()
+
+    }
+    open(){
+      this.audioContext.resume();
+    }
+    
+  }
+
+
+
+  // container barEffect
+  const visualMainElement = document.getElementById('soundContainer');
+  // n bar
+  const visualValueCount = 16;
+  // var for get all bar 
+  let visualElements;
+
+
+
+  // crear barras
+  let i;
+  for (i = 0; i < visualValueCount; ++i) {
+    const elm = document.createElement('div');
+    visualMainElement.appendChild(elm);
+  }
+
+  visualElements = document.querySelectorAll('#soundContainer div');
+
+
+  function run() {
+
+
+    // Swapping values around for a better visual effect
+    const dataMap = { 0: 15, 1: 10, 2: 8, 3: 9, 4: 6, 5: 5, 6: 2, 7: 1, 8: 0, 9: 4, 10: 3, 11: 7, 12: 11, 13: 13, 14: 14, 15: 14 };
+      processFrame = (data) => {
+      const values = Object.values(data);
+      let i;
+      for (i = 0; i < visualValueCount; ++i) {
+        const value = values[dataMap[i]] / 250;
+        const elmStyles = visualElements[i].style;
+        elmStyles.transform = `scaleY( ${value} )`;
+        elmStyles.opacity = Math.max(.3, value);
+      }
+    };
+
+
+
+
+  };
+
+
+  function init(){
+    if (startBarSound==false)
+    {
+      run()
+      instancia = new AudioVisualizer(new AudioContext(), processFrame);
+      startBarSound = true
+
+    } else{
+      instancia.closed()
+    }
+  }
+
+  </script>
+
+ -->
+
+
+    </div>
+  </div>
+
+
+
+
+
+  
+
+</body>
+
+</html>
+ 
+
+<!-- 
+
+
+<div id="texto" class="mx-auto bg-primary text-light"></div> -->
